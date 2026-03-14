@@ -1,57 +1,26 @@
 import express from "express";
-import axios from "axios";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import cors from "cors";
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
 
-const EC2_API = "http://51.21.161.160:3000";
-const EC2_BLOCKCHAIN = "http://51.21.161.160:4001";
+/*
+Forward ALL requests to EC2 backend
+*/
 
-/* Backend proxy */
+app.use(
+  "/",
+  createProxyMiddleware({
+    target: "http://51.21.161.160:3000",
+    changeOrigin: true,
+    secure: false
+  })
+);
 
-app.use("/api", async (req, res) => {
-  try {
-    const url = EC2_API + req.originalUrl.replace("/api", "");
-    const response = await axios({
-      method: req.method,
-      url,
-      data: req.body,
-      headers: req.headers
-    });
+const PORT = process.env.PORT || 10000;
 
-    res.status(response.status).json(response.data);
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-/* Blockchain proxy */
-
-app.use("/blockchain", async (req, res) => {
-  try {
-    const url = EC2_BLOCKCHAIN + req.originalUrl.replace("/blockchain", "");
-    const response = await axios({
-      method: req.method,
-      url,
-      data: req.body,
-      headers: req.headers
-    });
-
-    res.status(response.status).json(response.data);
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get("/", (req, res) => {
-  res.send("Render proxy running");
-});
-
-app.listen(3000, () => {
-  console.log("Proxy server running");
+app.listen(PORT, () => {
+  console.log(`Proxy server running on port ${PORT}`);
 });
