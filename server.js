@@ -1,7 +1,7 @@
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import cors from "cors";
-import http from "http";
+import https from "https";
 
 const app = express();
 
@@ -9,7 +9,7 @@ app.use(cors());
 
 // 1. Create a custom HTTP agent to keep connections alive 
 // and handle high volumes of concurrent requests
-const keepAliveAgent = new http.Agent({
+const keepAliveAgent = new https.Agent({
   keepAlive: true,
   maxSockets: 100,      // Maximum number of sockets to allow per host
   maxFreeSockets: 10,   // Maximum number of sockets to leave open in a free state
