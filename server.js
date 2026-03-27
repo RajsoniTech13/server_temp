@@ -22,7 +22,7 @@ Forward ALL requests to EC2 backend
 app.use(
   "/",
   createProxyMiddleware({
-    target: "https://breach-backend-ucq3.onrender.com:3000",
+    target: "https://breach-backend-ucq3.onrender.com",
     changeOrigin: true,
     secure: false,
     agent: keepAliveAgent, // Use the custom agent we created above
